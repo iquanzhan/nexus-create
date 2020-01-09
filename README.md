@@ -1,5 +1,5 @@
 # nexus-create
-搭建Maven仓库
+# 搭建Maven仓库
 
 ## 开启root用户运行nexus
 
@@ -68,7 +68,7 @@ https://public.nexus.pentaho.org/content/groups/omni/
 
 
 
-
+# 添加npm仓库
 
 ## 添加npm代理
 
@@ -76,7 +76,7 @@ https://public.nexus.pentaho.org/content/groups/omni/
 
 为其创建一个单独的存储空间。
 
-[![img](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010463979.jpg)](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010463979.jpg)
+![image-20200109213250359](assets/image-20200109213250359.png)
 
 ## 2，创建hosted类型的npm。
 
@@ -84,19 +84,20 @@ https://public.nexus.pentaho.org/content/groups/omni/
 - `Storage`：Blob store，我们下拉选择前面创建好的专用blob：npm-hub。
 - `Hosted`：开发环境，我们运行重复发布，因此Delpoyment policy 我们选择Allow redeploy。这个很重要！
 
-[![img](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464086.jpg)](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464086.jpg)
+![image-20200109213309801](assets/image-20200109213309801.png)
 
 ## 3，创建一个proxy类型的npm仓库。
 
 - `Name`: proxy-npm
-- `Proxy`：Remote Storage: 远程仓库地址，这里填写: [https://registry.npmjs.org](http://www.eryajf.net/go?url=https://registry.npmjs.org)
+- `Proxy`：Remote Storage: 远程仓库地址，
+- 这里填写:1. [https://registry.npmjs.org](http://www.eryajf.net/go?url=https://registry.npmjs.org) 2. https://registry.npm.taobao.org
 - `Storage`: npm-hub。
 
 其他的均是默认。
 
 整体配置截图如下：
 
-[![img](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464111.jpg)](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464111.jpg)
+![image-20200109213325411](assets/image-20200109213325411.png)
 
 ## 4，创建一个group类型的npm仓库。
 
@@ -106,7 +107,7 @@ https://public.nexus.pentaho.org/content/groups/omni/
 
 整体配置截图如下：
 
-[![img](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464250.jpg)](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464250.jpg)
+![image-20200109213351142](assets/image-20200109213351142.png)
 
 这些配置完成之后，就可以使用了。
 
@@ -114,30 +115,25 @@ https://public.nexus.pentaho.org/content/groups/omni/
 
 新建一台环境干净的主机，安装好node环境。
 
-首先通过`curl 192.168.106.10/a | sh`安装好node环境。
-
-然后拷贝一份前端项目的源码。
-
 ### 1，首先获取默认的仓库地址：
 
-1. [root@moban business_jsdweb]$npm config get registry
-2. https://registry.npmjs.org/
+1. npm config get registry
 
 ### 2，配置为私服地址。
 
 从如下截图中查看(其实就是创建的组对外的地址)。
 
-[![img](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464311.jpg)](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464311.jpg)
+![image-20200109213651863](assets/image-20200109213651863.png)
 
 通过如下命令配置：
 
-1. [root@moban business_jsdweb]$npm config set registry http://192.168.112.214:8081/repository/group-npm/
-2. [root@moban business_jsdweb]$npm config get registry
-3. http://192.168.112.214:8081/repository/group-npm/
+1. npm config set registry http://192.168.31.134:8081/repository/group-npm/
+2. npm config get registry
+3. http://192.168.31.134:8081/repository/group-npm/
 
 现在开始安装，安装之前先看一下组里的内容：
 
-[![img](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464499.jpg)](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464499.jpg)
+![image-20200109213734384](assets/image-20200109213734384.png)
 
 可以看到还是空的。
 
@@ -147,19 +143,11 @@ https://public.nexus.pentaho.org/content/groups/omni/
 
 在编译的过程中，我们已经可以看看组里的变化了：
 
-[![img](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464487.jpg)](http://www.eryajf.net/wp-content/uploads/2018/10/2018103010464487.jpg)
+![image-20200109213748555](assets/image-20200109213748555.png)
 
 安装完成，整个过程如下，可以看到一共花费了`82秒`。
 
-1. [root@moban business_jsdweb]$npm install
-2.  
-3. \> uglifyjs-webpack-plugin@0.4.6 postinstall /root/business_jsdweb/node_modules/webpack/node_modules/uglifyjs-webpack-plugin
-4. \> node lib/post_install.js
-5.  
-6. npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.4 (node_modules/fsevents):
-7. npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.4: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
-8.  
-9. added 1216 packages from 717 contributors in 82.171s
+1. npm install
 
 ### 4，再一次安装编译。
 
@@ -167,8 +155,7 @@ https://public.nexus.pentaho.org/content/groups/omni/
 
 编译之前，先将远程地址配置为我们自己的：
 
-1. [root@7-3 business_jsdweb]$npm config get registry
-2. https://registry.npmjs.org/
-3. [root@7-3 business_jsdweb]$npm config set registry http://192.168.112.214:8081/repository/group-npm/
-4. [root@7-3 business_jsdweb]$npm config get registry
+1. npm config get registry
+3. npm config set registry http://192.168.112.214:8081/repository/group-npm/
+4. npm config get registry
 5. http://192.168.112.214:8081/repository/group-npm/
