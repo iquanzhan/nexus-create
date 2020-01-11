@@ -125,7 +125,7 @@ https://public.nexus.pentaho.org/content/groups/omni/
 
 通过如下命令配置：
 
-1. npm config set registry http://192.168.31.134:8081/repository/group-npm/
+1. npm config set registry http://192.168.4.188:8081/repository/npm-group/
 2. npm config get registry
 3. http://192.168.31.134:8081/repository/group-npm/
 

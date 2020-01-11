@@ -1,0 +1,208 @@
+# 环境安装Docker版本
+
+## 一、安装Docker
+
+### 1.1安装步骤
+
+1、Docker安装要求内核版本高于3.10，查看内核版本命令：
+
+```
+uname -r
+```
+
+2、使用 `root` 权限登录 Centos。确保 yum 包更新到最新。
+
+```
+$ sudo yum update
+```
+
+3、卸载旧版本(如果安装过旧版本的话)
+
+```
+$ sudo yum remove docker  docker-common docker-selinux docker-engine
+```
+
+4、安装需要的软件包， yum-util 提供yum-config-manager功能，另外两个是devicemapper驱动依赖的
+
+```
+$ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+```
+
+5、设置yum源
+
+```
+$ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+```
+
+6、查看所有docker版本
+
+```
+yum list docker-ce --showduplicates | sort -r
+```
+
+7、安装docker
+
+```
+sudo yum install docker-ce
+```
+
+8、启动、开机启动
+
+```
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+9、验证是否成功，如果包含client和service两个版本，表示安装成功
+
+```
+docker version
+```
+
+10、配置使用阿里云的镜像服务：
+
+[http://dev.aliyun.com](http://dev.aliyun.com/)
+
+进入阿里云开发者中心，选择控制台，找到镜像加速服务。
+
+### 1.2常用docker命令
+
+#### 1、查看所有容器 docker ps -a
+
+#### 2、查看哪些容器在运行：docker ps
+
+#### 3、查看宿主机上的docker 镜像docker images
+
+#### 4、查看当前docker 信息 ：docker info
+
+#### 5、启动、停止、重启镜像：docker  start/stop/restart container_name/container_id
+
+#### 6、列出所有的镜像以及镜像的信息： docker image ls
+
+#### 7、查看镜像、容器、数据卷所占用的空间：docker ststem df
+
+#### 8、删除本地镜像： docker image rm container_id /container_name 
+
+#### 9、查看日志：docker logs container_id /container_name 
+
+#### 10、进入容器执行命令docker exec -it 38a2cae4c32f sh
+
+#### 11删除images：/docker rmi c8ae00a40d48
+
+## 二、安装Mysql
+
+#### 1.创建mysql
+
+下载镜像：
+
+```
+docker pull centos/mysql‐57‐centos7
+```
+
+创建容器：
+
+```
+docker run -di --name=mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 centos/mysql-57-centos7
+```
+
+## 三、创建redis
+
+下载镜像：
+
+```
+docker pull redis
+```
+
+创建容器
+
+```
+docker run -di --name=redis -p 6379:6379 -e requirepass=123456 redis
+```
+
+## 四、创建mongodb
+
+下载镜像：
+
+```
+docker pull mongo
+```
+
+创建容器：
+
+```
+docker run -di --name=tensquare_mongo -p 27017:27017 mongo
+```
+
+## 五、创建nexus仓库
+
+下载镜像：
+
+```
+docker pull sonatype/nexus3
+```
+
+创建容器：
+
+```
+docker run -di --name nexus3 \
+ --restart=always \
+-p 8081:8081 \
+-p 8082:8082  \
+-p 8083:8083  \
+-p 8084:8084  \
+-p 8085:8085   \
+-v /opt/nexus-data:/nexus-data \
+sonatype/nexus3
+```
+
+错误处理：
+
+```
+mkdir: cannot create directory '../sonatype-work/nexus3/log': Permission denied
+```
+
+```
+chown -R 200 /opt/nexus-data/
+```
+
+## 六、安装easy-mock
+
+下载镜像
+
+```
+docker pull blackcater/easy-moc
+```
+
+创建容器
+
+```
+docker run -d -p 7300:7300 --link mongodb:mongodb -v /opt/mock-config/:/easy-mock/config --name easymock blackcater/easy-mock
+```
+
+## 七、安装docker-compose
+
+```
+curl -L https://get.daocloud.io/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+```
+
+## 八、安装easy-mock
+
+```
+docker-compose up -d
+```
+
+![image-20200111202441273](assets/image-20200111202441273.png)
+
+## 九、安装gogs
+下载镜像
+
+```
+docker pull gogs/gogs
+```
+
+创建容器
+
+```
+docker run -d --name=gogs -p 10022:22 -p 10080:3000 -v /opt/gogs:/data gogs/gogs
+```
