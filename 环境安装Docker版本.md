@@ -87,7 +87,9 @@ docker version
 
 #### 10、进入容器执行命令docker exec -it 38a2cae4c32f sh
 
-#### 11删除images：/docker rmi c8ae00a40d48
+#### 11、删除images：/docker rmi c8ae00a40d48
+
+#### 12、修改容器自启动：docker update --restart=always
 
 ## 二、安装Mysql
 
@@ -204,5 +206,126 @@ docker pull gogs/gogs
 创建容器
 
 ```
-docker run -d --name=gogs -p 10022:22 -p 10080:3000 -v /opt/gogs:/data gogs/gogs
+docker run --name=gogs -p 10022:22 -p 18000:3000 -v /var/gogs:/data gogs/gogs
+```
+
+重新安装时记得删除/var/gogs下文件，并赋予权限
+
+## 十、安装GitLab
+
+下载镜像
+
+```
+docker pull docker.io/gitlab/gitlab-ce
+```
+
+创建容器
+
+```
+docker run -d -h gitlab -p 2222:22 -p 18001:80 -p 8443:443 -v /docker/gitlab/config:/etc/gitlab -v /docker/gitlab/logs:/var/log/gitlab -v /docker/gitlab/data:/var/opt/gitlab --restart always --name gitlab gitlab/gitlab-ce:latest
+```
+
+## 十一、安装内部邮件系统
+
+拉取镜像
+
+```
+docker pull bestwu/ewomail
+```
+
+创建容器：
+
+```
+ docker run  -d -h mail.zdpx.com --restart=always   -p 17025:25   -p 109:109   -p 110:110   -p 143:143   -p 465:465   -p 587:587   -p 993:993   -p 995:995    -p 18002:80   -p 18003:8080   -v `pwd`/mysql/:/ewomail/mysql/data/   -v `pwd`/vmail/:/ewomail/mail/   -v `pwd`/ssl/certs/:/etc/ssl/certs/   -v `pwd`/ssl/private/:/etc/ssl/private/   -v `pwd`/rainloop:/ewomail/www/rainloop/data   -v `pwd`/ssl/dkim/:/ewomail/dkim/   --name ewomail bestwu/ewomailserver
+
+```
+
+默认管理用户名：admin ewomail123
+
+## 十二、容器搭建DNS服务器
+
+拉取镜像：
+
+```
+docker pull sameersbn/bind
+```
+
+创建容器：
+
+```
+docker run --name bind -d --restart=always --publish 53:53/tcp --publish 53:53/udp --publish 10000:10000/tcp --volume /srv/docker/bind:/data sameersbn/bind:latest
+```
+
+## 十三：搭建nginx服务器
+
+拉取镜像
+
+```
+docker pull nginx
+```
+
+创建容器
+
+```
+docker run -d -p 80:80 --name nginx nginx
+```
+
+拷贝配置：
+
+```
+docker cp -a nginx:/etc/nginx/ /docker/nginx/conf
+```
+
+停止并重启
+
+```
+docker stop nginx
+docker rm nginx
+```
+
+重新运行挂载
+
+```
+docker run -p 80:80 --restart always --name nginx -v /docker/nginx/www:/www -v /docker/nginx/conf:/etc/nginx/ -v /docker/nginx/logs:/var/log/nginx -v /docker/nginx/wwwlogs:/wwwlogs -d nginx
+```
+
+重启
+
+```
+docker restart nginx
+```
+
+## 十四、关闭防火墙
+
+```
+systemctl stop firewalld.service #停止firewall
+systemctl disable firewalld.service #禁止firewall开机启动
+```
+
+## 十五、创建私有仓库
+
+拉取镜像
+
+```
+docker pull registry
+```
+
+创建容器
+
+```
+docker run -di --name=registry -p 5000:5000 registry
+```
+
+## 十六、创建jenkins
+
+拉取镜像
+
+```
+docker pull jenkins
+```
+
+创建容器
+
+```
+docker run -d -p 10084:8080 -v ~/jenkins:/var/jenkins_home --name jenkins --restart=always jenkins
 ```
