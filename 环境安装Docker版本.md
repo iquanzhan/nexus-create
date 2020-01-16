@@ -30,8 +30,30 @@ $ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
 
 5、设置yum源
 
+1) 安装wget
+
 ```
-$ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install -y wget
+```
+
+2) 备份/etc/yum.repos.d/CentOS-Base.repo文件
+
+```
+cd /etc/yum.repos.d/
+mv CentOS-Base.repo CentOS-Base.repo.back
+```
+
+3) 下载阿里云的Centos-6.repo文件
+
+```
+wget -O CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+```
+
+4) 重新加载yum
+
+```
+yum clean all
+yum makecache
 ```
 
 6、查看所有docker版本
@@ -98,13 +120,13 @@ docker version
 下载镜像：
 
 ```
-docker pull centos/mysql‐57‐centos7
+docker pull centos/mysql-57-centos7
 ```
 
 创建容器：
 
 ```
-docker run -di --name=mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 centos/mysql-57-centos7
+docker run -di --name=mysql --restart=always -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 centos/mysql-57-centos7
 ```
 
 ## 三、创建redis
@@ -118,7 +140,7 @@ docker pull redis
 创建容器
 
 ```
-docker run -di --name=redis -p 6379:6379 -e requirepass=123456 redis
+docker run -di --name=redis --restart=always -p 6379:6379 -e requirepass=123456 redis
 ```
 
 ## 四、创建mongodb
@@ -132,7 +154,7 @@ docker pull mongo
 创建容器：
 
 ```
-docker run -di --name=tensquare_mongo -p 27017:27017 mongo
+docker run -di --name=tensquare_mongo --restart=always -p 27017:27017 mongo
 ```
 
 ## 五、创建nexus仓库
@@ -203,13 +225,21 @@ docker-compose up -d
 docker pull gogs/gogs
 ```
 
+创建存储目录
+
+```csharp
+mkdir -p /var/gogs
+```
+
 创建容器
 
 ```
-docker run --name=gogs -p 10022:22 -p 18000:3000 -v /var/gogs:/data gogs/gogs
+docker run -di --name=gogs --restart=always -p 10022:22 -p 3000:3000 -v /var/gogs:/data gogs/gogs
 ```
 
 重新安装时记得删除/var/gogs下文件，并赋予权限
+
+http_port 改为3000 ，root_url改为dominIP:3080
 
 ## 十、安装GitLab
 
@@ -222,7 +252,9 @@ docker pull docker.io/gitlab/gitlab-ce
 创建容器
 
 ```
-docker run -d -h gitlab -p 2222:22 -p 18001:80 -p 8443:443 -v /docker/gitlab/config:/etc/gitlab -v /docker/gitlab/logs:/var/log/gitlab -v /docker/gitlab/data:/var/opt/gitlab --restart always --name gitlab gitlab/gitlab-ce:latest
+docker run -d -h gitlab --restart=always -p 2222:22 -p 18001:80 -p 8443:443 -v /docker/gitlab/config:/etc/gitlab -v /docker/gitlab/logs:/var/log/gitlab -v /docker/gitlab/data:/var/opt/gitlab --restart always --name gitlab gitlab/gitlab-ce:latest
+
+密码123456789
 ```
 
 ## 十一、安装内部邮件系统
@@ -267,7 +299,7 @@ docker pull nginx
 创建容器
 
 ```
-docker run -d -p 80:80 --name nginx nginx
+docker run -d -p 80:80 --restart=always --name nginx nginx
 ```
 
 拷贝配置：
@@ -313,7 +345,7 @@ docker pull registry
 创建容器
 
 ```
-docker run -di --name=registry -p 5000:5000 registry
+docker run -di --restart=always --name=registry -p 5000:5000 registry
 ```
 
 ## 十六、创建jenkins
@@ -327,5 +359,21 @@ docker pull jenkins
 创建容器
 
 ```
-docker run -d -p 10084:8080 -v ~/jenkins:/var/jenkins_home --name jenkins --restart=always jenkins
+docker run -d -p 18004:8080 --restart=always -v /docker/jenkins:/var/jenkins_home --name jenkins --restart=always jenkins
+
+52c19256dbe344bea25cae3f2730d866
+```
+
+## 十七、安装tomcat
+
+拉取镜像
+
+```
+docker search tomcat
+```
+
+创建容器
+
+```
+docker run -d -v --restart=always /opt/xxxx.war:/usr/local/tomcat/webapps/xxxx.war -p  8080:8080 tomcat 
 ```
