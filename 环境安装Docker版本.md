@@ -359,7 +359,7 @@ docker pull jenkins
 创建容器
 
 ```
-docker run -d -p 18004:8080 --restart=always -v /docker/jenkins:/var/jenkins_home --name jenkins --restart=always jenkins
+docker run -d -p 18004:8080 -v /docker/jenkins:/var/jenkins_home --name jenkins --restart=always jenkins
 
 52c19256dbe344bea25cae3f2730d866
 ```
@@ -377,3 +377,78 @@ docker search tomcat
 ```
 docker run -d -v --restart=always /opt/xxxx.war:/usr/local/tomcat/webapps/xxxx.war -p  8080:8080 tomcat 
 ```
+
+## 十八、安装verdaccio
+
+拉取镜像
+
+```
+#环境准备
+docker pull verdaccio/verdaccio
+mkdir -p /opt/docker/verdaccio/conf  #config.yaml和htpasswd存放在这里
+mkdir -p /opt/docker/verdaccio/storage #包文件等
+chown -R 100:101 /opt/docker/verdaccio/ #给容器对物理目录的读写权限
+```
+
+创建配置文件
+
+将以下内容写入config.yaml 
+$ sudo cat /opt/docker/verdaccio/conf/config.yaml
+
+```
+# path to a directory with all packages
+storage: /verdaccio/storage
+
+auth:
+  htpasswd:
+    file: /verdaccio/conf/htpasswd
+    # Maximum amount of users allowed to register, defaults to "+infinity".
+    # You can set this to -1 to disable registration.
+    #max_users: 1000
+
+# a list of other known repositories we can talk to
+uplinks:
+  npmjs:
+    url: https://registry.npm.taobao.org/
+
+packages:
+  '@*/*':
+    # scoped packages
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+
+  '**':
+    # allow all users (including non-authenticated users) to read and
+    # publish all packages
+    #
+    # you can specify usernames/groupnames (depending on your auth plugin)
+    # and three keywords: "$all", "$anonymous", "$authenticated"
+    access: $all
+
+    # allow all known users to publish packages
+    # (anyone can register by default, remember?)
+    publish: $authenticated
+
+    # if package is not available locally, proxy requests to 'npmjs' registry
+    proxy: npmjs
+
+# To use `npm audit` uncomment the following section
+middlewares:
+  audit:
+    enabled: true
+
+# log settings
+logs:
+  - {type: stdout, format: pretty, level: http}
+  #- {type: file, path: verdaccio.log, level: info}
+
+```
+
+创建容器
+
+```
+#启动启动容器
+docker run --name verdaccio -itd -v /opt/docker/verdaccio:/verdaccio -p 4873:4873 verdaccio/verdaccio
+```
+
