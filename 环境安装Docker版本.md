@@ -378,77 +378,78 @@ docker search tomcat
 docker run -d -v --restart=always /opt/xxxx.war:/usr/local/tomcat/webapps/xxxx.war -p  8080:8080 tomcat 
 ```
 
-## 十八、安装verdaccio
+## 十八、安装oracle
 
 拉取镜像
 
 ```
-#环境准备
-docker pull verdaccio/verdaccio
-mkdir -p /opt/docker/verdaccio/conf  #config.yaml和htpasswd存放在这里
-mkdir -p /opt/docker/verdaccio/storage #包文件等
-chown -R 100:101 /opt/docker/verdaccio/ #给容器对物理目录的读写权限
-```
-
-创建配置文件
-
-将以下内容写入config.yaml 
-$ sudo cat /opt/docker/verdaccio/conf/config.yaml
-
-```
-# path to a directory with all packages
-storage: /verdaccio/storage
-
-auth:
-  htpasswd:
-    file: /verdaccio/conf/htpasswd
-    # Maximum amount of users allowed to register, defaults to "+infinity".
-    # You can set this to -1 to disable registration.
-    #max_users: 1000
-
-# a list of other known repositories we can talk to
-uplinks:
-  npmjs:
-    url: https://registry.npm.taobao.org/
-
-packages:
-  '@*/*':
-    # scoped packages
-    access: $all
-    publish: $authenticated
-    proxy: npmjs
-
-  '**':
-    # allow all users (including non-authenticated users) to read and
-    # publish all packages
-    #
-    # you can specify usernames/groupnames (depending on your auth plugin)
-    # and three keywords: "$all", "$anonymous", "$authenticated"
-    access: $all
-
-    # allow all known users to publish packages
-    # (anyone can register by default, remember?)
-    publish: $authenticated
-
-    # if package is not available locally, proxy requests to 'npmjs' registry
-    proxy: npmjs
-
-# To use `npm audit` uncomment the following section
-middlewares:
-  audit:
-    enabled: true
-
-# log settings
-logs:
-  - {type: stdout, format: pretty, level: http}
-  #- {type: file, path: verdaccio.log, level: info}
-
+docker pull registry.cn-hangzhou.aliyuncs.com/helowin/oracle_11g
 ```
 
 创建容器
 
 ```
 #启动启动容器
-docker run --name verdaccio -itd -v /opt/docker/verdaccio:/verdaccio -p 4873:4873 verdaccio/verdaccio
+docker run -d -p 1521:1521 --name oracle11g registry.cn-hangzhou.aliyuncs.com/helowin/oracle_11g
+
+docker start oracle11g
+
+```
+
+创建软链接
+
+```
+docker exec -it oracle11g bash
+```
+
+切换到root 用户下
+
+```
+su root
+
+密码：helowin
+```
+
+编辑profile文件配置ORACLE环境变量
+
+```
+export ORACLE_HOME=/home/oracle/app/oracle/product/11.2.0/dbhome_2
+
+export ORACLE_SID=helowin
+
+export PATH=$ORACLE_HOME/bin:$PATH
+```
+
+创建软连接
+
+​      ln -s $ORACLE_HOME/bin/sqlplus /usr/bin
+
+切换到oracle 用户
+
+​       这里还要说一下，一定要写中间的内条 -  必须要，否则软连接无效
+
+```
+su - oracle
+```
+
+登录修改密码：
+
+```
+sqlplus /nolog
+
+conn /as sysdba
+
+alter user system identified by system;
+
+alter user sys identified by sys;
+
+也可以创建用户  create user test identified by test;
+
+并给用户赋予权限  grant connect,resource,dba to test;
+
+alter database mount;
+
+#刷新下表 
+ALTER PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME UNLIMITED;
 ```
 
