@@ -359,9 +359,7 @@ docker pull jenkins
 创建容器
 
 ```
-docker run -d -p 18004:8080 -v /docker/jenkins:/var/jenkins_home --name jenkins --restart=always jenkins
-
-52c19256dbe344bea25cae3f2730d866
+docker run -d -p 18005:8080 -v /docker/jenkins:/var/jenkins_home --name jenkins --restart=always jenkins
 ```
 
 ## 十七、安装tomcat
@@ -369,13 +367,13 @@ docker run -d -p 18004:8080 -v /docker/jenkins:/var/jenkins_home --name jenkins 
 拉取镜像
 
 ```
-docker search tomcat
+docker pull tomcat
 ```
 
 创建容器
 
 ```
-docker run -d -v --restart=always /opt/xxxx.war:/usr/local/tomcat/webapps/xxxx.war -p  8080:8080 tomcat 
+docker run -d --restart=always -v /docker/tomcat:/usr/local/tomcat --name=tomcat -p 18006:8080 tomcat
 ```
 
 ## 十八、安装oracle
