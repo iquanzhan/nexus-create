@@ -453,3 +453,15 @@ alter database mount;
 ALTER PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME UNLIMITED;
 ```
 
+服务名：
+
+helowinXDB
+
+端口号1521
+
+添加模式：
+
+```
+create user 用户名 identified by 口令[即密码];
+```
+
