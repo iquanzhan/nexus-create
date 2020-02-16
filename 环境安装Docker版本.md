@@ -373,7 +373,7 @@ docker pull tomcat
 创建容器
 
 ```
-docker run -d --restart=always -v /docker/tomcat:/usr/local/tomcat --name=tomcat -p 18006:8080 tomcat
+docker run -d --restart=always -v /docker/tomcat:/usr/local/tomcat/webapps --name=tomcat -p 18006:8080 tomcat
 ```
 
 ## 十八、安装oracle
