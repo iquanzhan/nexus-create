@@ -360,6 +360,36 @@ docker pull jenkins
 
 ```
 docker run -d -p 18005:8080 -v /docker/jenkins:/var/jenkins_home --name jenkins --restart=always jenkins
+
+docker run  --name jenkins --user=root -p 18005:8080 -p 50000:50000 -v /docker/jenkins:/var/jenkins_home -d jenkins/jenkins:lts
+
+```
+
+jenkins换源：
+
+以上的配置Json其实在Jenkins的工作目录中
+
+```bash
+$ cd {你的Jenkins工作目录}/updates  #进入更新配置位置
+```
+
+```bash
+$ vim default.json   #这个Json文件与上边的配置文件是相同的
+```
+
+使用vim的命令，如下，替换所有插件下载的url
+
+```
+将文件中所有，
+http://updates.jenkins-ci.org/download/
+替换为
+https://mirrors.tuna.tsinghua.edu.cn/jenkins/g
+```
+
+```bash
+http://www.google.com/
+替换为：
+https://www.baidu.com/
 ```
 
 ## 十七、安装tomcat
