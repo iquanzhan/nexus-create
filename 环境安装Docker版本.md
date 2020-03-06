@@ -268,11 +268,27 @@ docker pull bestwu/ewomail
 创建容器：
 
 ```
- docker run  -d -h mail.zdpx.com --restart=always   -p 17025:25   -p 109:109   -p 110:110   -p 143:143   -p 465:465   -p 587:587   -p 993:993   -p 995:995    -p 18002:80   -p 18003:8080   -v `pwd`/mysql/:/ewomail/mysql/data/   -v `pwd`/vmail/:/ewomail/mail/   -v `pwd`/ssl/certs/:/etc/ssl/certs/   -v `pwd`/ssl/private/:/etc/ssl/private/   -v `pwd`/rainloop:/ewomail/www/rainloop/data   -v `pwd`/ssl/dkim/:/ewomail/dkim/   --name ewomail bestwu/ewomailserver
+ docker run  -d -h mail.zdpx.com --restart=always   -p 25:25   -p 109:109   -p 110:110   -p 143:143   -p 465:465   -p 587:587   -p 993:993   -p 995:995    -p 18002:80   -p 18003:8080   -v `pwd`/mysql/:/ewomail/mysql/data/   -v `pwd`/vmail/:/ewomail/mail/   -v `pwd`/ssl/certs/:/etc/ssl/certs/   -v `pwd`/ssl/private/:/etc/ssl/private/   -v `pwd`/rainloop:/ewomail/www/rainloop/data   -v `pwd`/ssl/dkim/:/ewomail/dkim/   --name ewomail bestwu/ewomailserver
 
 ```
 
 默认管理用户名：admin ewomail123
+
+邮箱管理后台http://192.168.4.188:18003  账号 admin 密码 ewomail123
+
+#### 接收不到邮件解决办法
+
+有效于错误日志报10024端口错误
+
+错误原因：10024端口跑的服务主要用于ewomail中反垃圾反病毒作用，然而docker镜像中没有集成，所以会无法接收到邮件。
+
+1. 注释/etc/postfix/main.cf中的
+
+```
+content_filter = smtp-amavis:[127.0.0.1]:10024
+
+receive_override_options = no_address_mappings
+```
 
 ## 十二、容器搭建DNS服务器
 
@@ -287,6 +303,8 @@ docker pull sameersbn/bind
 ```
 docker run --name bind -d --restart=always --publish 53:53/tcp --publish 53:53/udp --publish 10000:10000/tcp --volume /srv/docker/bind:/data sameersbn/bind:latest
 ```
+
+登录账户密码：root/password
 
 ## 十三：搭建nginx服务器
 
