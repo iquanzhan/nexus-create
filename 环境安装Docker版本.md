@@ -113,6 +113,28 @@ docker version
 
 #### 12、修改容器自启动：docker update --restart=always
 
+#### 13、保存镜像为文件
+
+```
+docker save -o 要保存的文件名  要保存的镜像
+```
+
+```
+docker save -o java8.tar lwieske/java-8
+```
+
+从文件加载镜像：
+
+```
+docker load < 文件名
+```
+
+```
+docker load < java8.tar
+```
+
+#### 13、删除docker无用的数据docker system prune
+
 ## 二、安装Mysql
 
 #### 1.创建mysql
@@ -510,4 +532,30 @@ helowinXDB
 ```
 create user 用户名 identified by 口令[即密码];
 ```
+
+## 十九、YAPI环境搭建
+
+### 创建volume
+
+- `docker volume create yapi-mongo`
+
+创建一个储存卷,用来专门存放`yapi`使用的`mongodb`的数据
+
+为什么要独立出来,这是为了以后升级的着想,数据库保留,只要启动的时候关联一下就行了
+
+------
+
+### 启动mongodb
+
+- `docker run -d --name yapi-mongo -v yapi-mongo:/data/db -p 27017:27017 mongo`
+
+------
+
+### 初始化Yapi和启动Yapi
+
+- `docker run -d --name yapi -p 3000:3000 --link yapi-mongo crper/yapi`
+
+这里比上面多的一个参数就是`--link`,用来使连个容器通讯的,
+
+**过程均可用**`docker logs  `查看初始化的管理用户用户名密码
 
