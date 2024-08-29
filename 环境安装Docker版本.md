@@ -46,7 +46,7 @@ mv CentOS-Base.repo CentOS-Base.repo.back
 3) 下载阿里云的Centos-6.repo文件
 
 ```
-wget -O CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+7wget -O CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 ```
 
 4) 重新加载yum
@@ -54,6 +54,11 @@ wget -O CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
 ```
 yum clean all
 yum makecache
+```
+5) 添加docker repo
+
+```
+yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 ```
 
 6、查看所有docker版本
